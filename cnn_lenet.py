@@ -241,7 +241,7 @@ def conv_net(params, layers, data, labels):
 #######     DO NOT MODIFY, READ ONLY IF YOU ARE INTERESTED       #######
 ########################################################################
 
-def im2col_conv(input_n, layer, h_out, w_out):
+def col2im(input_n, layer, h_out, w_out):
   """Convert columns to image
 
   Args:
@@ -296,7 +296,7 @@ def conv_layer_forward(input, layer, param):
   stride = layer['stride']
   group = layer['group']
   num = layer['num']
-  
+
   # resolve output shape
   h_out = (h_in + 2*pad - k) / stride + 1
   w_out = (w_in + 2*pad - k) / stride + 1
@@ -321,7 +321,7 @@ def conv_layer_forward(input, layer, param):
   }
   for n in range(batch_size):
     input_n['data'] = input['data'][:, n]
-    col = im2col_conv(input_n, layer, h_out, w_out)
+    col = col2im(input_n, layer, h_out, w_out)
     tmp_output = col.T.dot(param['w']) + param['b']
     output['data'][:, n] = tmp_output.flatten()
 
@@ -401,7 +401,7 @@ def conv_layer_backward(output, input, layer, param):
   }
   for n in range(batch_size):
     input_n['data'] = input['data'][:, n]
-    col = im2col_conv(input_n, layer, h_out, w_out)
+    col = col2im(input_n, layer, h_out, w_out)
     tmp_data_diff = np.reshape(output['diff'][:, n], (h_out*w_out, num))
 
     param_grad['b'] += np.sum(tmp_data_diff, axis=0)
@@ -450,6 +450,7 @@ def pooling_layer_forward(input, layer):
 
   # TODO: implement your pooling forward here
   # implementation begins
+  X = input['data']
 
   # implementation ends
 

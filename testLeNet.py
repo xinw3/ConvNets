@@ -74,7 +74,7 @@ def main():
   layers = get_lenet()
 
   # load data
-  # change the following value to true to load the entire dataset
+  # TODO:change the following value to true to load the entire dataset
   fullset = False
   xtrain, ytrain, xval, yval, xtest, ytest = cnn_lenet.load_mnist(fullset)
 
