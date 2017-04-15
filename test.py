@@ -17,70 +17,80 @@ import numpy as np
 ####
 # test maxpooling forward
 ####
-# input = np.array([
-#         [[ 0,  1,  2],
-#         [ 3,  4,  5],
-#         [ 6,  7,  8]],
-#        [[ 9, 10, 11],
-#         [12, 13, 14],
-#         [15, 16, 17]],
-#        [[18, 19, 20],
-#         [21, 22, 23],
-#         [24, 25, 26]]])
-# h_in = input.shape[0]
-# w_in = input.shape[1]
-# c = input.shape[2]
+input = np.array([
+        [[ 0,  1,  2],
+        [ 3,  4,  5],
+        [ 6,  7,  8]],
+       [[ 9, 10, 11],
+        [12, 13, 14],
+        [15, 16, 17]],
+       [[18, 19, 20],
+        [21, 22, 23],
+        [24, 25, 26]]])
+h_in = input.shape[0]
+w_in = input.shape[1]
+c = input.shape[2]
 # # print c
 #
 #
-# s = 1
-# k = 2
-# h_out = 2
-# w_out = 2
+s = 1
+k = 2
+h_out = 2
+w_out = 2
 #
-# temp = np.zeros([h_out, w_out, c])
+temp = np.zeros([h_out, w_out, c])
 #
-# for i in range(h_out):
-#     for j in range(w_out):
-#         print 'input row = %d, column = %d' % (i, j)
-#         print input[(i*s) : (k + i*s), (j*s) : (k + j*s), :]
-#         temp[i, j, :] = np.amax(input[(i*s) : (k + i*s), (j*s) : (k + j*s), :], axis=(0, 1))
-#         print 'temp = \n', temp[i, j, :]
-#
-# print 'temp = \n', temp
+for i in range(h_out):
+    for j in range(w_out):
+        print 'input row = %d, column = %d' % (i, j)
+        print input[(i*s) : (k + i*s), (j*s) : (k + j*s), :]
+        temp[i, j, :] = np.amax(input[(i*s) : (k + i*s), (j*s) : (k + j*s), :], axis=(0, 1))
+        print 'temp = \n', temp[i, j, :]
+
+print 'output = \n', temp
 # print temp.shape
 #
-# print 'input\n'
-# print "%d %d %d" % (input[0,0,0], input[0,1,0], input[0,2,0])
-# print "%d %d %d" % (input[1,0,0], input[1,1,0], input[1,2,0])
-# print "%d %d %d" % (input[2,0,0], input[2,1,0], input[2,2,0])
+print 'input\n', input
+print '\nchannel 0:'
+print "%d %d %d" % (input[0,0,0], input[0,1,0], input[0,2,0])
+print "%d %d %d" % (input[1,0,0], input[1,1,0], input[1,2,0])
+print "%d %d %d" % (input[2,0,0], input[2,1,0], input[2,2,0])
+print '\nchannel 1:'
+print "%d %d %d" % (input[0,0,1], input[0,1,1], input[0,2,1])
+print "%d %d %d" % (input[1,0,1], input[1,1,1], input[1,2,1])
+print "%d %d %d" % (input[2,0,1], input[2,1,1], input[2,2,1])
+print '\nchannel 2:'
+print "%d %d %d" % (input[0,0,2], input[0,1,2], input[0,2,2])
+print "%d %d %d" % (input[1,0,2], input[1,1,2], input[1,2,2])
+print "%d %d %d" % (input[2,0,2], input[2,1,2], input[2,2,2])
 #
-# print 'output\n'
-# print "%d %d" % (temp[0,0,0], temp[0,1,0])
-# print "%d %d" % (temp[1,0,0], temp[1,1,0])
+print '\noutput\n'
+print "%d %d" % (temp[0,0,0], temp[0,1,0])
+print "%d %d" % (temp[1,0,0], temp[1,1,0])
 
 ####
 # test maxpooling backward
 ####
-input = np.array([
-        [0, 8, 14],
-        [2, 7, 7],
-        [0, 1, 5]])
-output = np.array([
-        [8, 14],
-        [7, 7]])
-h_out = output.shape[0]
-w_out = output.shape[1]
-k = 2
-s = 1
-# print c
+# input = np.array([
+#         [0, 8, 14],
+#         [2, 7, 7],
+#         [0, 1, 5]])
+# output = np.array([
+#         [8, 14],
+#         [7, 7]])
+# h_out = output.shape[0]
+# w_out = output.shape[1]
+# k = 2
+# s = 1
+# # print c
 input_od = np.zeros(input.shape)
+output = temp
 
 for i in range(h_out):
     for j in range(w_out):
-        input_od[(i*s) : (k + i*s), (j*s) : (k + j*s)] += input[(i*s) : (k + i*s), (j*s) : (k + j*s)] >= output[i, j]
+        input_od[(i*s) : (k + i*s), (j*s) : (k + j*s)] += input[(i*s) : (k + i*s), (j*s) : (k + j*s), :] >= output[i, j]
 
-print 'derivatives\n', np.minimum(input_od, 1)
+print '\nderivatives\n', np.minimum(input_od, 1)
 
 
 
