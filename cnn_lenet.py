@@ -488,20 +488,32 @@ def pooling_layer_backward(output, input, layer):
   h_out = output['height']
   w_out = output['width']
   k = layer['k']
+  stride = layer['stride']
 
   input_od = np.zeros(input['data'].shape)
 
   # TODO: implement backward pass here
   # implementation begins
   print '\n\n####### Max Pooling Backward #######\n'
-  print 'input data shape ', input['data'].shape    # (3200, 64)
-  print 'output data shape ', output['data'].shape  # (800, 64)
+
   h_in = input['height']
   w_in = input['width']
 
+  X = input['data'].reshape((h_in, w_in, c, batch_size))
+  Y = output['data'].reshape((h_out, w_out, c, batch_size))
+  temp = np.zeros(X.shape)
+
+  print 'input data shape ', input['data'].shape    # (3200, 64)
+  print 'output data shape ', output['data'].shape  # (800, 64)
+  print 'h_in: %d, w_in: %d, c: %d, h_out: %d, w_out: %d, batch_size: %d' % (h_in, w_in, c, h_out, w_out, batch_size)
+  for i in range(h_out):
+      for j in range(w_out):
+          temp[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride)] += X[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride), :, :] >= Y[i, j, :, :]
 
   # implementation ends
-
+  input_od = temp.reshape(input_od.shape)
+  print 'result test:', np.all(input_od == 0)
+  print 'input_od', input_od.shape
   assert np.all(input['data'].shape == input_od.shape), 'input_od has incorrect shape!'
 
   return input_od
@@ -529,7 +541,7 @@ def relu_forward(input, layer):
 
   # TODO: implement your relu forward pass here
   # implementation begins
-  print '\n\n######### RELU Forward Layer #########\n'
+  print '\n\n######### RELU Forward #########\n'
 
   output['data'] = np.maximum(0, input['data'])
 
