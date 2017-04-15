@@ -572,7 +572,7 @@ def relu_backward(output, input, layer):
 
   # TODO: implement your relu backward pass here
   # implementation begins
-
+  input_od = 1 if input['data'] > 0 else 0
   # implementation ends
 
   assert np.all(input['data'].shape == input_od.shape), 'input_od has incorrect shape!'
