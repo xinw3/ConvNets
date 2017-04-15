@@ -14,19 +14,43 @@ import numpy as np
 # print 'd = \n', d
 
 input = np.array([
-                [0, 0, 4, 0],
-                [0, 2, 5, 0],
-                [0, 0, 1, 0],
-                [0, 0, 2, 0]])
-s = 2
+        [[ 0,  1,  2],
+        [ 3,  4,  5],
+        [ 6,  7,  8]],
+       [[ 9, 10, 11],
+        [12, 13, 14],
+        [15, 16, 17]],
+       [[18, 19, 20],
+        [21, 22, 23],
+        [24, 25, 26]]])
+h_in = input.shape[0]
+w_in = input.shape[1]
+c = input.shape[2]
+# print c
+
+
+s = 1
 k = 2
 h_out = 2
 w_out = 2
 
-temp = np.zeros([h_out, w_out])
+temp = np.zeros([h_out, w_out, c])
 
 for i in range(h_out):
     for j in range(w_out):
-        temp[i, j] = np.amax(input[(i*s) : (k + i*s), (j*s) : (k + j*s)], axis=(0, 1))
+        print 'input row = %d, column = %d' % (i, j)
+        print input[(i*s) : (k + i*s), (j*s) : (k + j*s), :]
+        temp[i, j, :] = np.amax(input[(i*s) : (k + i*s), (j*s) : (k + j*s), :], axis=(0, 1))
+        print 'temp = \n', temp[i, j, :]
 
 print 'temp = \n', temp
+print temp.shape
+
+print 'input\n'
+print "%d %d %d" % (input[0,0,0], input[0,1,0], input[0,2,0])
+print "%d %d %d" % (input[1,0,0], input[1,1,0], input[1,2,0])
+print "%d %d %d" % (input[2,0,0], input[2,1,0], input[2,2,0])
+
+print 'output\n'
+print "%d %d" % (temp[0,0,0], temp[0,1,0])
+print "%d %d" % (temp[1,0,0], temp[1,1,0])
