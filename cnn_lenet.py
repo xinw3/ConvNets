@@ -450,7 +450,7 @@ def pooling_layer_forward(input, layer):
 
   # TODO: implement your pooling forward here
   # implementation begins
-  print '\n\n########### Max Pooling Forward Layer #################\n'
+  print '\n\n########### Max Pooling Forward #################\n'
   temp = np.zeros([h_out, w_out, c, batch_size])
   X = np.reshape(input['data'], (h_in, w_in, c, batch_size))
   for i in range(h_out):
@@ -458,9 +458,9 @@ def pooling_layer_forward(input, layer):
           temp[i, j, :, :] = np.amax(X[(i*stride):(k+i*stride), (j*stride):(k+j*stride), :, :], axis=(0, 1))
 
   output['data'] = np.reshape(temp, (h_out * w_out * c, batch_size))
-  print 'input size', input['data'].shape
+  print 'input size', input['data'].shape   # (3200, 64)
   print 'temp', temp.shape
-  print '\nmax pooling output ', output['data'].shape
+  print '\noutput ', output['data'].shape   # (800, 64)
 
   # implementation ends
 
@@ -493,6 +493,12 @@ def pooling_layer_backward(output, input, layer):
 
   # TODO: implement backward pass here
   # implementation begins
+  print '\n\n####### Max Pooling Backward #######\n'
+  print 'input data shape ', input['data'].shape    # (3200, 64)
+  print 'output data shape ', output['data'].shape  # (800, 64)
+  h_in = input['height']
+  w_in = input['width']
+
 
   # implementation ends
 

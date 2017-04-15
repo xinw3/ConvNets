@@ -59,27 +59,52 @@ import numpy as np
 # print "%d %d" % (temp[0,0,0], temp[0,1,0])
 # print "%d %d" % (temp[1,0,0], temp[1,1,0])
 
+####
+# test maxpooling backward
+####
+input = np.array([
+        [0, 8, 14],
+        [2, 7, 7],
+        [0, 1, 5]])
+output = np.array([
+        [8, 14],
+        [7, 7]])
+h_out = output.shape[0]
+w_out = output.shape[1]
+k = 2
+s = 1
+# print c
+input_od = np.zeros(input.shape)
+
+for i in range(h_out):
+    for j in range(w_out):
+        input_od[(i*s) : (k + i*s), (j*s) : (k + j*s)] += input[(i*s) : (k + i*s), (j*s) : (k + j*s)] >= output[i, j]
+
+print 'derivatives\n', np.minimum(input_od, 1)
+
+
+
 ##
 # test relu layer forward
 ##
-x = np.array([[1, -2, 0],
-              [-3, 5, 6]])
-y = np.maximum(0, x)
-print y
+# x = np.array([[1, -2, 0],
+#               [-3, 5, 6]])
+# y = np.maximum(0, x)
+# print y
 
 
 ##
 # test IP layer forward
 ##
 
-input = np.array([8, 14, 7, 7, 14, 14, 11, 11]).reshape((8,1))
-w = np.array([
-[1, 0.5, 1, 2, -1, 1, 1, -1],
-[0.5, 1, 2, 1, -0.5, 0.5, -1, 1],
-[0.25, -1, 1, 1, 0.5, -1, -1, -1]
-])
-b = np.array([0, 0, 0]).reshape(3, 1)
-
-output = np.dot(w, input) + b
-
-print 'output\n', output
+# input = np.array([8, 14, 7, 7, 14, 14, 11, 11]).reshape((8,1))
+# w = np.array([
+# [1, 0.5, 1, 2, -1, 1, 1, -1],
+# [0.5, 1, 2, 1, -0.5, 0.5, -1, 1],
+# [0.25, -1, 1, 1, 0.5, -1, -1, -1]
+# ])
+# b = np.array([0, 0, 0]).reshape(3, 1)
+#
+# output = np.dot(w, input) + b
+#
+# print 'output\n', output
