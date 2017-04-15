@@ -450,7 +450,17 @@ def pooling_layer_forward(input, layer):
 
   # TODO: implement your pooling forward here
   # implementation begins
-  X = input['data']
+  print '\n\n########### max pooling layer begin #################\n'
+  temp = np.zeros([h_out, w_out, c, batch_size])
+  X = np.reshape(input['data'], (h_in, w_in, c, batch_size))
+  for i in range(h_out):
+      for j in range(w_out):
+          temp[i, j, :, :] = np.amax(X[(i*stride):(k+i*stride), (j*stride):(k+j*stride), :, :], axis=(0, 1))
+
+  output['data'] = np.reshape(temp, (h_out * w_out * c, batch_size))
+  print 'input size', input['data'].shape
+  print 'temp', temp.shape
+  print '\nmax pooling output ', output['data'].shape
 
   # implementation ends
 
@@ -513,7 +523,7 @@ def relu_forward(input, layer):
 
   # TODO: implement your relu forward pass here
   # implementation begins
-
+  print '\n\n######### RELU forward layer begin #########\n'
   # implementation ends
 
   assert np.all(output['data'].shape == input['data'].shape), 'output[\'data\'] has incorrect shape!'

@@ -82,6 +82,8 @@ def main():
   ytrain = np.hstack([ytrain, yval])
   m_train = xtrain.shape[1]
 
+  print 'xtrain', xtrain.shape
+
   # cnn parameters
   batch_size = 64
   mu = 0.9
@@ -95,8 +97,8 @@ def main():
   test_interval = 500
   display_interval = 100
   snapshot = 5000
-  max_iter = 10000
-
+  # max_iter = 10000
+  max_iter = 10
   # initialize parameters
   params = cnn_lenet.init_convnet(layers)
   param_winc = copy.deepcopy(params)
