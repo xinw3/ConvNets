@@ -450,7 +450,7 @@ def pooling_layer_forward(input, layer):
 
   # TODO: implement your pooling forward here
   # implementation begins
-  print '\n\n########### max pooling forward layer begin #################\n'
+  print '\n\n########### Max Pooling Forward Layer #################\n'
   temp = np.zeros([h_out, w_out, c, batch_size])
   X = np.reshape(input['data'], (h_in, w_in, c, batch_size))
   for i in range(h_out):
@@ -523,7 +523,7 @@ def relu_forward(input, layer):
 
   # TODO: implement your relu forward pass here
   # implementation begins
-  print '\n\n######### RELU forward layer begin #########\n'
+  print '\n\n######### RELU Forward Layer #########\n'
 
   output['data'] = np.maximum(0, input['data'])
 
@@ -584,10 +584,19 @@ def inner_product_forward(input, layer, param):
   output['width'] = 1
   output['channel'] = num
   output['batch_size'] = batch_size
-  output['data'] = np.zeros((num, batch_size))
+  output['data'] = np.zeros((num, batch_size))  #(500, 64)
 
   # TODO: implement your inner product forward pass here
   # implementation begins
+  print '\n\n########## Inner Product Forward ##########\n'
+  print 'input', input['data'].shape    # (800, 64)
+  w = param['w']    # (800, 500)
+  b = param['b'].reshape((num, 1))    # (500, )
+  print 'w transpose', w.T.shape
+  print 'b', b.shape
+
+  output['data'] = np.dot(w.T, input['data']) + b
+  print 'output size ', output['data'].shape
 
   # implementation ends
 

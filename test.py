@@ -15,7 +15,7 @@ import numpy as np
 # print 'd = \n', d
 
 ####
-# test maxpooling
+# test maxpooling forward
 ####
 # input = np.array([
 #         [[ 0,  1,  2],
@@ -60,9 +60,26 @@ import numpy as np
 # print "%d %d" % (temp[1,0,0], temp[1,1,0])
 
 ##
-# test relu layers
+# test relu layer forward
 ##
 x = np.array([[1, -2, 0],
               [-3, 5, 6]])
 y = np.maximum(0, x)
 print y
+
+
+##
+# test IP layer forward
+##
+
+input = np.array([8, 14, 7, 7, 14, 14, 11, 11]).reshape((8,1))
+w = np.array([
+[1, 0.5, 1, 2, -1, 1, 1, -1],
+[0.5, 1, 2, 1, -0.5, 0.5, -1, 1],
+[0.25, -1, 1, 1, 0.5, -1, -1, -1]
+])
+b = np.array([0, 0, 0]).reshape(3, 1)
+
+output = np.dot(w, input) + b
+
+print 'output\n', output
