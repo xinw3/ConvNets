@@ -1,6 +1,7 @@
 import numpy as np
 ##
 # hstack and vstack concatenate two arrays
+#
 # a = np.array([[1, 2, 3],
 #                 [1, 2, 3]])
 # b = np.array([[4, 5, 6],
@@ -13,6 +14,9 @@ import numpy as np
 # print 'c = \n', c
 # print 'd = \n', d
 
+##
+# test maxpooling
+#
 input = np.array([
         [[ 0,  1,  2],
         [ 3,  4,  5],
