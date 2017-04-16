@@ -690,8 +690,9 @@ def inner_product_backward(output, input, layer, param):
   # print 'output shape', output['data'].shape    #(500, 64)
   param_grad['b'] = np.sum(output['diff'], axis=1)
   param_grad['w'] = np.dot(input['data'], output['diff'].T)
-  print 'param_grad b shape', param_grad['b'].shape     # (500, )
-  print 'param_grad w shape', param_grad['w'].shape     # (800, 500)
+  # print 'param_grad b shape', param_grad['b'].shape     # (500, )
+  # print 'param_grad w shape', param_grad['w'].shape     # (800, 500)
+  input_od = np.dot(param['w'], output['diff'])
 
   # implementation ends
 
