@@ -377,7 +377,7 @@ def conv_layer_backward(output, input, layer, param):
     param_grad: a dictionary stores gradients of parameters
     input_od: gradients w.r.t input data
   """
-  print '\n\n###### conv_layer_backward #######\n'
+  # print '\n\n###### conv_layer_backward #######\n'
 
   # get parameters
   h_in = input['height']
@@ -395,12 +395,12 @@ def conv_layer_backward(output, input, layer, param):
   param_grad['b'] = np.zeros(param['b'].shape)
   param_grad['w'] = np.zeros(param['w'].shape)
 
-  print 'output.shape: ', output['data'].shape
-  print 'output channel', output['channel']
-  print 'input.shape', input['data'].shape
-  print 'input channel', c
-  print 'layer k:', k
-  print 'param w.shape', param['w'].shape
+  # print 'output.shape: ', output['data'].shape
+  # print 'output channel', output['channel']
+  # print 'input.shape', input['data'].shape
+  # print 'input channel', c
+  # print 'layer k:', k
+  # print 'param w.shape', param['w'].shape
 
   input_n = {
     'height': h_in,
@@ -458,7 +458,7 @@ def pooling_layer_forward(input, layer):
 
   # TODO: implement your pooling forward here
   # implementation begins
-  print '\n\n########### Max Pooling Forward #################\n'
+  # print '\n\n########### Max Pooling Forward #################\n'
   temp = np.zeros([h_out, w_out, c, batch_size])
   X = np.reshape(input['data'], (h_in, w_in, c, batch_size))
   for i in range(h_out):
@@ -466,9 +466,9 @@ def pooling_layer_forward(input, layer):
           temp[i, j, :, :] = np.amax(X[(i*stride):(k+i*stride), (j*stride):(k+j*stride), :, :], axis=(0, 1))
 
   output['data'] = np.reshape(temp, (h_out * w_out * c, batch_size))
-  print 'input size', input['data'].shape   # (3200, 64)
-  print 'temp', temp.shape
-  print '\noutput ', output['data'].shape   # (800, 64)
+  # print 'input size', input['data'].shape   # (3200, 64)
+  # print 'temp', temp.shape
+  # print '\noutput ', output['data'].shape   # (800, 64)
 
   # implementation ends
 
@@ -502,7 +502,7 @@ def pooling_layer_backward(output, input, layer):
 
   # TODO: implement backward pass here
   # implementation begins
-  print '\n\n####### Max Pooling Backward #######\n'
+  # print '\n\n####### Max Pooling Backward #######\n'
 
   h_in = input['height']
   w_in = input['width']
@@ -512,10 +512,10 @@ def pooling_layer_backward(output, input, layer):
   output_diff = np.reshape(output['diff'], (h_out, w_out, c, batch_size))
   temp_od = np.zeros(X.shape)
 
-  print 'input data shape ', input['data'].shape    # (3200, 64)
-  print 'output data shape ', output['data'].shape  # (800, 64)
-  print 'output channel', output['channel']
-  print 'h_in: %d, w_in: %d, c: %d, k: %d, h_out: %d, w_out: %d, batch_size: %d' % (h_in, w_in, c, k, h_out, w_out, batch_size)
+  # print 'input data shape ', input['data'].shape    # (3200, 64)
+  # print 'output data shape ', output['data'].shape  # (800, 64)
+  # print 'output channel', output['channel']
+  # print 'h_in: %d, w_in: %d, c: %d, k: %d, h_out: %d, w_out: %d, batch_size: %d' % (h_in, w_in, c, k, h_out, w_out, batch_size)
 
   for i in range(h_out):
       for j in range(w_out):
@@ -571,12 +571,12 @@ def relu_forward(input, layer):
 
   # TODO: implement your relu forward pass here
   # implementation begins
-  print '\n\n######### RELU Forward #########\n'
+  # print '\n\n######### RELU Forward #########\n'
 
   output['data'] = np.maximum(0, input['data'])
 
-  print 'input size ', input['data'].shape
-  print 'output size', output['data'].shape
+  # print 'input size ', input['data'].shape
+  # print 'output size', output['data'].shape
   # implementation ends
 
   assert np.all(output['data'].shape == input['data'].shape), 'output[\'data\'] has incorrect shape!'
@@ -602,9 +602,9 @@ def relu_backward(output, input, layer):
 
   # TODO: implement your relu backward pass here
   # implementation begins
-  print '\n\n########## RELU Backward ###########\n'
-  print 'output diff', output['diff'].shape
-  print 'input shape', input['data'].shape
+  # print '\n\n########## RELU Backward ###########\n'
+  # print 'output diff', output['diff'].shape
+  # print 'input shape', input['data'].shape
   zeros = np.zeros(output['data'].shape)
   temp_od = np.array(np.greater(output, zeros), dtype=int)
   input_od = output['diff'] * temp_od
@@ -641,15 +641,15 @@ def inner_product_forward(input, layer, param):
 
   # TODO: implement your inner product forward pass here
   # implementation begins
-  print '\n\n########## Inner Product Forward ##########\n'
-  print 'input', input['data'].shape    # (800, 64)
+  # print '\n\n########## Inner Product Forward ##########\n'
+  # print 'input', input['data'].shape    # (800, 64)
   w = param['w']    # (800, 500)
   b = param['b'].reshape((num, 1))    # (500, )
-  print 'w transpose', w.T.shape
-  print 'b', b.shape
+  # print 'w transpose', w.T.shape
+  # print 'b', b.shape
 
   output['data'] = np.dot(w.T, input['data']) + b
-  print 'output size ', output['data'].shape
+  # print 'output size ', output['data'].shape
 
   # implementation ends
 
@@ -681,7 +681,7 @@ def inner_product_backward(output, input, layer, param):
 
   # TODO: implement your inner product backward pass here
   # implementation begins
-  print '\n\n######### Inner Product Backward ##########\n'
+  # print '\n\n######### Inner Product Backward ##########\n'
   # print 'param b shape', param['b'].shape   # (500, )
   # print 'param w shape', param['w'].shape   # (800, 500)
   # print 'input height = %d, weight = %d, channel = %d' % (input['height'], input['width'], input['channel'])    # 4, 4, 50
@@ -818,7 +818,7 @@ def sgd_momentum(w_rate, b_rate, mu, decay, params, param_winc, param_grad):
 
   # TODO: your implementation goes below this comment
   # implementation begins
-  print '\n\n######## SGD ##########\n'
+  # print '\n\n######## SGD ##########\n'
   for i in range(1, len(params)):
       w_grad_reg = param_grad[i]['w'] + decay * params[i]['w']
 
