@@ -332,7 +332,7 @@ def conv_layer_forward(input, layer, param):
 ########################################################################
 
 def col2im_conv(col, input, layer, h_out, w_out):
-  """Convert image to columns
+  """Convert columns to image
 
   Args:
     col: shape = (k*k, c, h_out*w_out)
@@ -377,6 +377,7 @@ def conv_layer_backward(output, input, layer, param):
     param_grad: a dictionary stores gradients of parameters
     input_od: gradients w.r.t input data
   """
+  print '\n\n###### conv_layer_backward #######\n'
 
   # get parameters
   h_in = input['height']
@@ -393,6 +394,13 @@ def conv_layer_backward(output, input, layer, param):
   param_grad = {}
   param_grad['b'] = np.zeros(param['b'].shape)
   param_grad['w'] = np.zeros(param['w'].shape)
+
+  print 'output.shape: ', output['data'].shape
+  print 'output channel', output['channel']
+  print 'input.shape', input['data'].shape
+  print 'input channel', c
+  print 'layer k:', k
+  print 'param w.shape', param['w'].shape
 
   input_n = {
     'height': h_in,
@@ -487,7 +495,7 @@ def pooling_layer_backward(output, input, layer):
   batch_size = input['batch_size']
   h_out = output['height']
   w_out = output['width']
-  k = layer['k']
+  k = layer['k']        # 2
   stride = layer['stride']
 
   input_od = np.zeros(input['data'].shape)
@@ -505,15 +513,32 @@ def pooling_layer_backward(output, input, layer):
 
   print 'input data shape ', input['data'].shape    # (3200, 64)
   print 'output data shape ', output['data'].shape  # (800, 64)
-  print 'h_in: %d, w_in: %d, c: %d, h_out: %d, w_out: %d, batch_size: %d' % (h_in, w_in, c, h_out, w_out, batch_size)
+  print 'output channel', output['channel']
+  print 'h_in: %d, w_in: %d, c: %d, k: %d, h_out: %d, w_out: %d, batch_size: %d' % (h_in, w_in, c, k, h_out, w_out, batch_size)
   for i in range(h_out):
       for j in range(w_out):
           temp[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride)] += X[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride), :, :] >= Y[i, j, :, :]
 
+# TODO: check
+  # input_n = {
+  #   'height': h_in,
+  #   'width': w_in,
+  #   'channel': c,
+  # }
+  # for i in range(batch_size):
+  #     input_n['data'] = input['data'][:, i]
+  #     temp_od = np.reshape(temp[:, :, :, i], (h_in*w_in, c))
+  #     col = col2im(input_n, layer, h_out, w_out)
+  #     temp_out_diff = np.reshape(output['diff'][:, i], (h_out*w_out, c))
+  #     col_diff = temp_od.dot(temp_out_diff.T)
+  #
+  #     im = col2im_conv(col_diff, input, layer, h_out, w_out)
+  #     input_od[:, i] = im.flatten()
+  #
+  # # print 'result test:', np.all(input_od == 0)
+  # print 'input_od', input_od.shape
   # implementation ends
-  input_od = temp.reshape(input_od.shape)
-  print 'result test:', np.all(input_od == 0)
-  print 'input_od', input_od.shape
+
   assert np.all(input['data'].shape == input_od.shape), 'input_od has incorrect shape!'
 
   return input_od
@@ -572,7 +597,12 @@ def relu_backward(output, input, layer):
 
   # TODO: implement your relu backward pass here
   # implementation begins
-  input_od = 1 if input['data'] > 0 else 0
+  print '\n\n########## RELU Backward ###########\n'
+  print 'output diff', output['diff'].shape
+  print 'input shape', input['data'].shape
+  zeros = np.zeros(output['data'].shape)
+  temp_od = np.array(np.greater(output, zeros), dtype=int)
+  input_od = output['diff'] * temp_od
   # implementation ends
 
   assert np.all(input['data'].shape == input_od.shape), 'input_od has incorrect shape!'
@@ -646,6 +676,17 @@ def inner_product_backward(output, input, layer, param):
 
   # TODO: implement your inner product backward pass here
   # implementation begins
+  print '\n\n######### Inner Product Backward ##########\n'
+  print 'param b shape', param['b'].shape   # (500, )
+  print 'param w shape', param['w'].shape   # (800, 500)
+  print 'input height = %d, weight = %d, channel = %d' % (input['height'], input['width'], input['channel'])    # 4, 4, 50
+  print 'output height = %d, weight = %d, channel = %d' % (output['height'], output['width'], output['channel'])    # 1, 1, 500
+  # print 'input shape', input['data'].shape  # (800, 64)
+  # print 'output shape', output['data'].shape    #(500, 64)
+  param_grad['b'] = np.sum(output['diff'], axis=1)
+  param_grad['w'] = np.dot(input['data'], output['diff'].T)
+  print 'param_grad b shape', param_grad['b'].shape
+  print 'param_grad w shape', param_grad['w'].shape
 
   # implementation ends
 
