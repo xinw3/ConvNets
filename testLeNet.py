@@ -82,7 +82,7 @@ def main():
   ytrain = np.hstack([ytrain, yval])
   m_train = xtrain.shape[1]
 
-  print 'xtrain', xtrain.shape
+  # print 'xtrain', xtrain.shape
 
   # cnn parameters
   batch_size = 64

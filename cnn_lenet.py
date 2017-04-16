@@ -496,7 +496,7 @@ def pooling_layer_backward(output, input, layer):
   h_out = output['height']
   w_out = output['width']
   k = layer['k']        # 2
-  stride = layer['stride']
+  s = layer['stride']
 
   input_od = np.zeros(input['data'].shape)
 
@@ -509,16 +509,21 @@ def pooling_layer_backward(output, input, layer):
 
   X = input['data'].reshape((h_in, w_in, c, batch_size))
   Y = output['data'].reshape((h_out, w_out, c, batch_size))
-  temp = np.zeros(X.shape)
+  output_diff = np.reshape(output['diff'], (h_out, w_out, c, batch_size))
+  temp_od = np.zeros(X.shape)
 
   print 'input data shape ', input['data'].shape    # (3200, 64)
   print 'output data shape ', output['data'].shape  # (800, 64)
   print 'output channel', output['channel']
   print 'h_in: %d, w_in: %d, c: %d, k: %d, h_out: %d, w_out: %d, batch_size: %d' % (h_in, w_in, c, k, h_out, w_out, batch_size)
+
   for i in range(h_out):
       for j in range(w_out):
-          temp[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride)] += X[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride), :, :] >= Y[i, j, :, :]
+          index = np.argmax(X[(i*s) : (k + i*s), (j*s) : (k + j*s), :, :])
+          temp_od[(i*s + (index/k)%k), (j*s + index%k), :, :] = output_diff[i, j, :, :]
+        #   temp[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride)] += X[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride), :, :] >= Y[i, j, :, :]
 
+  input_od = np.reshape(temp_od, input['data'].shape)
 # TODO: check
   # input_n = {
   #   'height': h_in,
