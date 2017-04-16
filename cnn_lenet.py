@@ -682,16 +682,16 @@ def inner_product_backward(output, input, layer, param):
   # TODO: implement your inner product backward pass here
   # implementation begins
   print '\n\n######### Inner Product Backward ##########\n'
-  print 'param b shape', param['b'].shape   # (500, )
-  print 'param w shape', param['w'].shape   # (800, 500)
-  print 'input height = %d, weight = %d, channel = %d' % (input['height'], input['width'], input['channel'])    # 4, 4, 50
-  print 'output height = %d, weight = %d, channel = %d' % (output['height'], output['width'], output['channel'])    # 1, 1, 500
+  # print 'param b shape', param['b'].shape   # (500, )
+  # print 'param w shape', param['w'].shape   # (800, 500)
+  # print 'input height = %d, weight = %d, channel = %d' % (input['height'], input['width'], input['channel'])    # 4, 4, 50
+  # print 'output height = %d, weight = %d, channel = %d' % (output['height'], output['width'], output['channel'])    # 1, 1, 500
   # print 'input shape', input['data'].shape  # (800, 64)
   # print 'output shape', output['data'].shape    #(500, 64)
   param_grad['b'] = np.sum(output['diff'], axis=1)
   param_grad['w'] = np.dot(input['data'], output['diff'].T)
-  print 'param_grad b shape', param_grad['b'].shape
-  print 'param_grad w shape', param_grad['w'].shape
+  print 'param_grad b shape', param_grad['b'].shape     # (500, )
+  print 'param_grad w shape', param_grad['w'].shape     # (800, 500)
 
   # implementation ends
 
