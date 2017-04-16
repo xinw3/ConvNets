@@ -818,6 +818,14 @@ def sgd_momentum(w_rate, b_rate, mu, decay, params, param_winc, param_grad):
 
   # TODO: your implementation goes below this comment
   # implementation begins
+  print '\n\n######## SGD ##########\n'
+  for i in range(1, len(params)):
+      w_grad_reg = param_grad[i]['w'] + decay * params[i]['w']
+
+      param_winc_[i]['w'] = mu * param_winc[i]['w'] + w_rate * w_grad_reg
+      params_[i]['w'] = params[i]['w'] - param_winc_[i]['w']
+      param_winc_[i]['b'] = mu * param_winc[i]['b'] + b_rate * param_grad[i]['b']
+      params_[i]['b'] = params[i]['b'] - param_winc_[i]['b']
 
   # implementation ends
 
