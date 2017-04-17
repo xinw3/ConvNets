@@ -270,7 +270,7 @@ def conv_net(params, layers, data, labels):
 ########################################################################
 
 def col2im(input_n, layer, h_out, w_out):
-  """Convert columns to image
+  """Convert image to columns
 
   Args:
     input_n: input data, shape=(h_in*w_in*c, )
@@ -486,16 +486,24 @@ def pooling_layer_forward(input, layer):
   output['data'] = np.zeros((h_out * w_out * c, batch_size))
 
   # TODO: implement your pooling forward here
+  # TODO: Using im2col batch_size c
   # implementation begins
   # print '\n\n########### Max Pooling Forward #################\n'
+  input_n = {
+    'height': h_in,
+    'width': w_in,
+    'channel': c,
+  }
+  for i in range(batch_size):
+      input_n['data'] = input['data'][:, i]
+      col = col2im(input_n, layer, h_out, w_out)    # (k*k*c, h_out*w_out)
+      col.reshape((c, k*k, h_out*w_out))
+      for j in range(c):
+
   temp = np.zeros([h_out, w_out, c, batch_size])
-  X = np.reshape(input['data'], (h_in, w_in, c, batch_size))
 
-  for i in range(h_out):
-      for j in range(w_out):
-          temp[i, j, :, :] = np.amax(X[(i*stride):(k+i*stride), (j*stride):(k+j*stride), :, :], axis=(0, 1))
 
-  output['data'] = np.reshape(temp, (h_out * w_out * c, batch_size))
+  output['data'][:, i] = np.reshape(temp, (h_out * w_out * c, batch_size))
   # print 'input size', input['data'].shape   # (3200, 64)
   # print 'temp', temp.shape
   # print '\noutput ', output['data'].shape   # (800, 64)
@@ -538,7 +546,7 @@ def pooling_layer_backward(output, input, layer):
   w_in = input['width']
 
   X = input['data'].reshape((h_in, w_in, c, batch_size))
-  Y = output['data'].reshape((h_out, w_out, c, batch_size))
+  output_copy = copy.deepcopy(output)
 
   # print 'input data shape ', input['data'].shape    # (3200, 64)
   # print 'output data shape ', output['data'].shape  # (800, 64)
@@ -555,8 +563,8 @@ def pooling_layer_backward(output, input, layer):
   for i in range(batch_size):
       input_n['data'] = input['data'][:, i]
       col = col2im(input_n, layer, h_out, w_out).reshape(k*k, c, h_out, w_out)    # (k*k*c, h_out*w_out)
-      output_4times = np.tile(output['data'][:, i], (k*k, 1))
-      out_diff = np.tile(output['diff'][:, i], (k*k, 1)).reshape(k*k, c, h_out, w_out)
+      output_4times = np.tile(output_copy['data'][:, i], (k*k, 1))
+      out_diff = np.tile(output_copy['diff'][:, i], (k*k, 1)).reshape(k*k, c, h_out, w_out)
       temp_diff = np.equal(col, output_4times.reshape(k*k, c, h_out, w_out)) * out_diff
 
       im = col2im_conv(temp_diff, input, layer, h_out, w_out)
