@@ -175,6 +175,9 @@ def conv_net(params, layers, data, labels):
   output[1]['batch_size'] = layers[1]['batch_size']
   output[1]['diff'] = 0
 
+
+
+
   for i in range(2, l):
     if layers[i]['type'] == 'CONV':
       output[i] = conv_layer_forward(output[i-1], layers[i], params[i-1])
@@ -186,6 +189,7 @@ def conv_net(params, layers, data, labels):
       output[i] = relu_forward(output[i-1], layers[i])
 
   i = l
+  # print 'i', i
   assert layers[i]['type'] == 'LOSS', 'last layer must be loss layer'
 
   wb = np.vstack([params[i-1]['w'], params[i-1]['b']])
@@ -234,6 +238,30 @@ def conv_net(params, layers, data, labels):
 
     param_grad[i-1]['w'] = param_grad[i-1]['w'] / batch_size
     param_grad[i-1]['b'] = param_grad[i-1]['b'] / batch_size
+
+
+  """
+    Visualization
+  """
+  # TODO: visualization part
+  # remember to comment import when submitting in Autolab
+  # from matplotlib import pyplot as plt
+  # from skimage.io import imshow
+  #
+  # # output of layer 1
+  # print output[1]['data'].shape     # (784, 64)
+  # h1 = output[1]['height']
+  # w1 = output[1]['width']
+  # plt.imshow(output[1]['data'][:, 1].reshape((h, w)))
+  # plt.show()
+  #
+  # # output of layer 2
+  # print 'output layer 2', output[2]['data'].shape     # (11520 = 24*24*20, 64)
+  # h2 = output[2]['height']
+  # w2 = output[2]['width']
+  #
+  # # output of layer 3
+  # print 'output layer 3', output[3]['data'].shape       # (2880 = 12*12*20, 64)
 
   return cp, param_grad
 
@@ -462,6 +490,7 @@ def pooling_layer_forward(input, layer):
   # print '\n\n########### Max Pooling Forward #################\n'
   temp = np.zeros([h_out, w_out, c, batch_size])
   X = np.reshape(input['data'], (h_in, w_in, c, batch_size))
+
   for i in range(h_out):
       for j in range(w_out):
           temp[i, j, :, :] = np.amax(X[(i*stride):(k+i*stride), (j*stride):(k+j*stride), :, :], axis=(0, 1))
@@ -525,10 +554,10 @@ def pooling_layer_backward(output, input, layer):
   }
   for i in range(batch_size):
       input_n['data'] = input['data'][:, i]
-      col = col2im(input_n, layer, h_out, w_out)    # (k*k*c, h_out*w_out)
+      col = col2im(input_n, layer, h_out, w_out).reshape(k*k, c, h_out, w_out)    # (k*k*c, h_out*w_out)
       output_4times = np.tile(output['data'][:, i], (k*k, 1))
-      out_diff = np.tile(output['diff'][:, i], (k*k, 1)).reshape(k*k*c, h_out*w_out)
-      temp_diff = np.equal(col, output_4times.reshape(k*k*c, h_out*w_out)) * out_diff
+      out_diff = np.tile(output['diff'][:, i], (k*k, 1)).reshape(k*k, c, h_out, w_out)
+      temp_diff = np.equal(col, output_4times.reshape(k*k, c, h_out, w_out)) * out_diff
 
       im = col2im_conv(temp_diff, input, layer, h_out, w_out)
       input_od[:, i] = im.flatten()
@@ -764,6 +793,7 @@ def mlrloss(wb, X, y, K, prediction):
   nll = 0
   od = np.zeros(prob.shape)
   nll = -np.sum(np.log(prob[y, np.arange(batch_size)]))
+  # print 'log likelihood', nll
 
   if prediction == 1:
     indices = np.argmax(prob, axis=0)
