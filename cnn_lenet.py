@@ -497,13 +497,12 @@ def pooling_layer_forward(input, layer):
   for i in range(batch_size):
       input_n['data'] = input['data'][:, i]
       col = col2im(input_n, layer, h_out, w_out)    # (k*k*c, h_out*w_out)
-      col.reshape((c, k*k, h_out*w_out))
+      col = col.reshape((k*k, c , h_out*w_out))
+      temp_output = np.zeros((c, h_out*w_out))
       for j in range(c):
-
-  temp = np.zeros([h_out, w_out, c, batch_size])
-
-
-  output['data'][:, i] = np.reshape(temp, (h_out * w_out * c, batch_size))
+          col_j = col[:, j, :].reshape((k*k, h_out*w_out))
+          temp_output[j, :] = np.amax(col_j, axis=0)
+      output['data'][:, i] = np.reshape(temp_output, (h_out * w_out * c, ))
   # print 'input size', input['data'].shape   # (3200, 64)
   # print 'temp', temp.shape
   # print '\noutput ', output['data'].shape   # (800, 64)

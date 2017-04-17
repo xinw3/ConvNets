@@ -97,7 +97,7 @@ def main():
   test_interval = 500
   display_interval = 100
   snapshot = 5000
-  max_iter = 100          # 10000
+  max_iter = 10000          # 10000
   # initialize parameters
   params = cnn_lenet.init_convnet(layers)
   param_winc = copy.deepcopy(params)
