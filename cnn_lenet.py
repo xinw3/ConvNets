@@ -510,23 +510,13 @@ def pooling_layer_backward(output, input, layer):
 
   X = input['data'].reshape((h_in, w_in, c, batch_size))
   Y = output['data'].reshape((h_out, w_out, c, batch_size))
-  # output_diff = np.reshape(output['diff'], (h_out, w_out, c, batch_size))
-  temp_od = np.zeros(X.shape)
 
   # print 'input data shape ', input['data'].shape    # (3200, 64)
   # print 'output data shape ', output['data'].shape  # (800, 64)
   # print 'output channel', output['channel']     # 50
   # print 'h_in: %d, w_in: %d, c: %d, k: %d, h_out: %d, w_out: %d, batch_size: %d' % (h_in, w_in, c, k, h_out, w_out, batch_size)
         #   8         8        50     2       4          4          64
-  for i in range(h_out):
-      for j in range(w_out):
-  #         index = np.argmax(X[(i*s) : (k + i*s), (j*s) : (k + j*s), :, :])
-  #         temp_od[(i*s + (index/k)%k), (j*s + index%k), :, :] = output_diff[i, j, :, :]
-          temp_od[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride)] += X[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride), :, :] >= Y[i, j, :, :]
 
-  # input_od = np.reshape(temp_od, input['data'].shape)
-  # print 'input_od: \n', input_od[:10, :]
-  # print 'input_od_approx:\n', input_od_approx[:10, :]
 # TODO: check
   input_n = {
     'height': h_in,
@@ -537,7 +527,6 @@ def pooling_layer_backward(output, input, layer):
       input_n['data'] = input['data'][:, i]
       col = col2im(input_n, layer, h_out, w_out)    # (k*k*c, h_out*w_out)
       output_4times = np.tile(output['data'][:, i], (k*k, 1))
-    #   print 'output_4times shape',output_4times.shape
       out_diff = np.tile(output['diff'][:, i], (k*k, 1)).reshape(k*k*c, h_out*w_out)
       temp_diff = np.equal(col, output_4times.reshape(k*k*c, h_out*w_out)) * out_diff
 
@@ -649,8 +638,6 @@ def inner_product_forward(input, layer, param):
   # print 'input', input['data'].shape    # (800, 64)
   w = param['w']    # (800, 500)
   b = param['b'].reshape((num, 1))    # (500, )
-  # print 'w transpose', w.T.shape
-  # print 'b', b.shape
 
   output['data'] = np.dot(w.T, input['data']) + b
   # print 'output size ', output['data'].shape
@@ -823,7 +810,8 @@ def sgd_momentum(w_rate, b_rate, mu, decay, params, param_winc, param_grad):
   # TODO: your implementation goes below this comment
   # implementation begins
   # print '\n\n######## SGD ##########\n'
-  for i in range(1, len(params)):
+  # print params
+  for i in range(1, len(params) + 1):
       w_grad_reg = param_grad[i]['w'] + decay * params[i]['w']
 
       param_winc_[i]['w'] = mu * param_winc[i]['w'] + w_rate * w_grad_reg
