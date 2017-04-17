@@ -377,7 +377,7 @@ def conv_layer_backward(output, input, layer, param):
     param_grad: a dictionary stores gradients of parameters
     input_od: gradients w.r.t input data
   """
-  # print '\n\n###### conv_layer_backward #######\n'
+  # print '\n\n###### Conv Layer Backward #######\n'
 
   # get parameters
   h_in = input['height']
@@ -395,12 +395,13 @@ def conv_layer_backward(output, input, layer, param):
   param_grad['b'] = np.zeros(param['b'].shape)
   param_grad['w'] = np.zeros(param['w'].shape)
 
-  # print 'output.shape: ', output['data'].shape
-  # print 'output channel', output['channel']
-  # print 'input.shape', input['data'].shape
-  # print 'input channel', c
-  # print 'layer k:', k
-  # print 'param w.shape', param['w'].shape
+  # print 'output.shape: ', output['data'].shape      # (3200, 64)
+  # print 'h_out = %d, w_out = %d, h_in = %d, w_in = %d' % (h_out, w_out, h_in, w_in)     # (8, 8, 12, 12)
+  # print 'output channel', output['channel']     # 50
+  # print 'input.shape', input['data'].shape      # (2880, 64)
+  # print 'input channel', c                      # 20
+  # print 'layer k = %d, num = %d' % (k, num)     # 5, 50
+  # print 'param w.shape', param['w'].shape       # (500, 50)
 
   input_n = {
     'height': h_in,
@@ -496,7 +497,7 @@ def pooling_layer_backward(output, input, layer):
   h_out = output['height']
   w_out = output['width']
   k = layer['k']        # 2
-  s = layer['stride']
+  stride = layer['stride']
 
   input_od = np.zeros(input['data'].shape)
 
@@ -509,38 +510,41 @@ def pooling_layer_backward(output, input, layer):
 
   X = input['data'].reshape((h_in, w_in, c, batch_size))
   Y = output['data'].reshape((h_out, w_out, c, batch_size))
-  output_diff = np.reshape(output['diff'], (h_out, w_out, c, batch_size))
+  # output_diff = np.reshape(output['diff'], (h_out, w_out, c, batch_size))
   temp_od = np.zeros(X.shape)
 
   # print 'input data shape ', input['data'].shape    # (3200, 64)
   # print 'output data shape ', output['data'].shape  # (800, 64)
-  # print 'output channel', output['channel']
+  # print 'output channel', output['channel']     # 50
   # print 'h_in: %d, w_in: %d, c: %d, k: %d, h_out: %d, w_out: %d, batch_size: %d' % (h_in, w_in, c, k, h_out, w_out, batch_size)
-
+        #   8         8        50     2       4          4          64
   for i in range(h_out):
       for j in range(w_out):
-          index = np.argmax(X[(i*s) : (k + i*s), (j*s) : (k + j*s), :, :])
-          temp_od[(i*s + (index/k)%k), (j*s + index%k), :, :] = output_diff[i, j, :, :]
-        #   temp[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride)] += X[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride), :, :] >= Y[i, j, :, :]
+  #         index = np.argmax(X[(i*s) : (k + i*s), (j*s) : (k + j*s), :, :])
+  #         temp_od[(i*s + (index/k)%k), (j*s + index%k), :, :] = output_diff[i, j, :, :]
+          temp_od[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride)] += X[(i*stride) : (k + i*stride), (j*stride) : (k + j*stride), :, :] >= Y[i, j, :, :]
 
-  input_od = np.reshape(temp_od, input['data'].shape)
+  # input_od = np.reshape(temp_od, input['data'].shape)
+  # print 'input_od: \n', input_od[:10, :]
+  # print 'input_od_approx:\n', input_od_approx[:10, :]
 # TODO: check
-  # input_n = {
-  #   'height': h_in,
-  #   'width': w_in,
-  #   'channel': c,
-  # }
-  # for i in range(batch_size):
-  #     input_n['data'] = input['data'][:, i]
-  #     temp_od = np.reshape(temp[:, :, :, i], (h_in*w_in, c))
-  #     col = col2im(input_n, layer, h_out, w_out)
-  #     temp_out_diff = np.reshape(output['diff'][:, i], (h_out*w_out, c))
-  #     col_diff = temp_od.dot(temp_out_diff.T)
-  #
-  #     im = col2im_conv(col_diff, input, layer, h_out, w_out)
-  #     input_od[:, i] = im.flatten()
-  #
-  # # print 'result test:', np.all(input_od == 0)
+  input_n = {
+    'height': h_in,
+    'width': w_in,
+    'channel': c,
+  }
+  for i in range(batch_size):
+      input_n['data'] = input['data'][:, i]
+      col = col2im(input_n, layer, h_out, w_out)    # (k*k*c, h_out*w_out)
+      output_4times = np.tile(output['data'][:, i], (k*k, 1))
+    #   print 'output_4times shape',output_4times.shape
+      out_diff = np.tile(output['diff'][:, i], (k*k, 1)).reshape(k*k*c, h_out*w_out)
+      temp_diff = np.equal(col, output_4times.reshape(k*k*c, h_out*w_out)) * out_diff
+
+      im = col2im_conv(temp_diff, input, layer, h_out, w_out)
+      input_od[:, i] = im.flatten()
+
+  # print 'result test:', np.all(input_od == 0)
   # print 'input_od', input_od.shape
   # implementation ends
 
