@@ -75,7 +75,7 @@ def main():
 
   # load data
   # TODO:change the following value to true to load the entire dataset
-  fullset = False
+  fullset = True
   xtrain, ytrain, xval, yval, xtest, ytest = cnn_lenet.load_mnist(fullset)
 
   xtrain = np.hstack([xtrain, xval])
