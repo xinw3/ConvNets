@@ -543,7 +543,6 @@ def pooling_layer_forward(input, layer):
       for j in range(c):
           col_j = col[(k*k*j):(k*k*(j+1)), :]   # (4,16)
           temp_output[j, :] = np.amax(col_j, axis=0)
-          print 'temp_output[j, :]', temp_output[j, :].shape
       output['data'][:, i] = np.reshape(temp_output.T, (c * h_out * w_out, ))
   # print 'input size', input['data'].shape   # (3200, 64)
   # print 'temp', temp.shape
