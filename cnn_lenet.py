@@ -245,49 +245,64 @@ def conv_net(params, layers, data, labels):
   """
   # TODO: remember to comment import when submitting in Autolab
 
-  # from matplotlib import pyplot as plt
-  # from skimage.io import imshow
-  # import matplotlib.gridspec as gridspec
-  #
-  # # output of layer 1
-  # # print output[1]['data'].shape     # (784, 64)
-  # fig1 = plt.figure(1)
-  # plt.title('Original Image')
-  # h1 = output[1]['height']
-  # w1 = output[1]['width']
-  # plt.imshow(output[1]['data'][:, 1].reshape((h1, w1)))
-  # plt.axis('off')
-  #
-  # # output of layer 2
-  # print 'output layer 2', output[2]['data'].shape     # (11520 = 24*24*20, 64)
-  # h2 = output[2]['height']
-  # w2 = output[2]['width']
-  # c = output[2]['channel']
-  # output_data = np.reshape(output[2]['data'][:, 1], (h2, w2, c))
-  #
-  # fig2 = plt.figure(2)
-  # fig2.suptitle("Output of Layer 2")
-  # gs = gridspec.GridSpec(4, 5)
-  # channel = 0
-  # # ax = plt.subplot(gs[1, 1])
-  # # ax.imshow(output_data[:,:, channel])
-  # # fig.add_subplot(ax)
-  # for i in range(4):
-  #     for j in range(5):
-  #         ax = plt.subplot(gs[i, j])
-  #         plt.axis('off')
-  #         ax.imshow(output_data[:,:, channel])
-  #         fig2.add_subplot(ax)
-  #         channel += 1
-  #
-  # plt.show()
-  # plt.close(fig1)
-  # plt.close(fig2)
-  #
-  #
-  #
-  # # output of layer 3
+  from matplotlib import pyplot as plt
+  from skimage.io import imshow
+  import matplotlib.gridspec as gridspec
+
+  # output of layer 1
+  # print output[1]['data'].shape     # (784, 64)
+  fig1 = plt.figure(1)
+  fig1.suptitle('Original Image')
+  h1 = output[1]['height']
+  w1 = output[1]['width']
+  plt.imshow(output[1]['data'][:, 1].reshape((h1, w1)), cmap='gray')
+  plt.axis('off')
+
+  # output of layer 2
+  print 'output layer 2', output[2]['data'].shape     # (11520 = 24*24*20, 64)
+  h2 = output[2]['height']
+  w2 = output[2]['width']
+  c = output[2]['channel']
+  output2_data = np.reshape(output[2]['data'][:, 1], (h2, w2, c))
+
+  fig2 = plt.figure(2)
+  fig2.suptitle("Output of Layer 2")
+  gs = gridspec.GridSpec(4, 5)
+  channel = 0
+  # ax = plt.subplot(gs[1, 1])
+  # ax.imshow(output_data[:,:, channel])
+  # fig.add_subplot(ax)
+  for i in range(4):
+      for j in range(5):
+          ax = plt.subplot(gs[i, j])
+          plt.axis('off')
+          ax.imshow(output2_data[:,:, channel], cmap='gray')
+          fig2.add_subplot(ax)
+          channel += 1
+
+  # output of layer 3
   # print 'output layer 3', output[3]['data'].shape       # (2880 = 12*12*20, 64)
+  h3 = output[3]['height']
+  w3 = output[3]['width']
+  c3 = output[3]['channel']
+  output3_data = np.reshape(output[3]['data'][:, 1], (h3, w3, c3))
+  fig3 = plt.figure(3)
+  fig3.suptitle("Output of Layer 3")
+  gs3 = gridspec.GridSpec(4, 5)
+  channel3 = 0
+
+  for i in range(4):
+      for j in range(5):
+          ax3 = plt.subplot(gs3[i, j])
+          plt.axis('off')
+          ax3.imshow(output3_data[:,:, channel3], cmap='gray')
+          fig3.add_subplot(ax3)
+          channel3 += 1
+
+  plt.show()
+  plt.close(fig1)
+  plt.close(fig2)
+  plt.close(fig3)
 
   return cp, param_grad
 
@@ -523,12 +538,13 @@ def pooling_layer_forward(input, layer):
   for i in range(batch_size):
       input_n['data'] = input['data'][:, i]
       col = col2im(input_n, layer, h_out, w_out)    # (k*k*c, h_out*w_out)
-      col = col.reshape((k*k, c , h_out*w_out))
+    #   col = col.reshape((k*k, c , h_out*w_out))
       temp_output = np.zeros((c, h_out*w_out))
       for j in range(c):
-          col_j = col[:, j, :].reshape((k*k, h_out*w_out))
+          col_j = col[(k*k*j):(k*k*(j+1)), :]   # (4,16)
           temp_output[j, :] = np.amax(col_j, axis=0)
-      output['data'][:, i] = np.reshape(temp_output, (h_out * w_out * c, ))
+          print 'temp_output[j, :]', temp_output[j, :].shape
+      output['data'][:, i] = np.reshape(temp_output.T, (c * h_out * w_out, ))
   # print 'input size', input['data'].shape   # (3200, 64)
   # print 'temp', temp.shape
   # print '\noutput ', output['data'].shape   # (800, 64)

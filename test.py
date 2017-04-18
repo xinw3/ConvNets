@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.matlib
+import cnn_lenet
 ##
 # hstack and vstack concatenate two arrays
 #
@@ -150,7 +151,27 @@ import numpy.matlib
 """
  test write output to a file
 """
-f = open('out.txt', 'w')
-for i in range(10):
- print >> f, 'i = ', i
-f.close()
+# f = open('out.txt', 'w')
+# for i in range(10):
+#  print >> f, 'i = ', i
+# f.close()
+
+
+'''
+test pooling forward
+'''
+input = {
+    'height': 8,
+    'width': 8,
+    'channel': 50,
+    'batch_size': 1,
+    'data': np.arange(3200).reshape(3200, 1)
+}
+layer = {
+    'k': 2,
+    'pad': 0,
+    'stride': 1
+}
+output = cnn_lenet.pooling_layer_forward(input, layer)
+print 'input\n', input['data'][:10,]
+print 'output\n', output['data'][:10,]
