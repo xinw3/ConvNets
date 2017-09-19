@@ -135,10 +135,8 @@ def main():
                            param_grad)
 
     # display training loss
-    #f = open('output.txt', 'w')
     if (step+1) % display_interval == 0:
       print 'cost = %f training_percent = %f' % (cp['cost'], cp['percent'])
-      #print >> f, 'cost = %f training_percent = %f' % (cp['cost'], cp['percent'])
 
     # display test accuracy
     if (step+1) % test_interval == 0:
@@ -146,9 +144,7 @@ def main():
       cptest, _ = cnn_lenet.conv_net(params, layers, xtest, ytest)
       layers[1]['batch_size'] = 64
       print '\ntest accuracy: %f\n' % (cptest['percent'])
-      #print >> f, '\ntest accuracy: %f\n' % (cptest['percent'])
 
-    #f.close()
     # save params peridocally to recover from any crashes
     if (step+1) % snapshot == 0:
       pickle_path = 'lenet.mat'
